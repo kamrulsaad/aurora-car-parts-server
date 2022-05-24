@@ -36,6 +36,7 @@ async function run() {
     const purchaseCollection = client.db('aurora-car-parts').collection('purchase')
     const usersCollection = client.db('aurora-car-parts').collection('users')
     const paymentCollection = client.db('aurora-car-parts').collection('payment')
+    const reviewsCollection = client.db('aurora-car-parts').collection('reviews')
 
     try {
 
@@ -85,6 +86,19 @@ async function run() {
             const updatedBooking = await purchaseCollection.updateOne(filter, updateDoc)
             res.send(updatedBooking)
 
+        })
+
+        // review API
+
+        app.post('/reviews',verifyJWT, async(req, res) => {
+            const review = req.body
+            const result = await reviewsCollection.insertOne(review)
+            res.send(result)
+        })
+
+        app.get('/reviews', verifyJWT, async(req, res) => {
+            const result = await reviewsCollection.find().toArray()
+            res.send(result)
         })
 
         // users API 
