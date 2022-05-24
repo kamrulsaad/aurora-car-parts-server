@@ -2,7 +2,7 @@ import express from "express";
 import cors from 'cors'
 import 'dotenv/config'
 import jwt from 'jsonwebtoken'
-import { MongoClient, ServerApiVersion } from 'mongodb'
+import { MongoClient, ObjectId, ServerApiVersion } from 'mongodb'
 const port = process.env.PORT || 5000
 const app = express()
 
@@ -22,6 +22,13 @@ async function run(){
 
         app.get('/products', async(req, res) => {
             const result = await productsCollection.find().toArray()
+            res.send(result)
+        })
+
+        app.get('/purchase/:id', async(req, res) => {
+            const id = req.params.id
+            const query = {_id: ObjectId(id)}
+            const result = await productsCollection.findOne(query)
             res.send(result)
         })
 
