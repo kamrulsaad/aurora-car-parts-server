@@ -55,12 +55,18 @@ async function run() {
 
         app.get('/products', async (req, res) => {
             const result = await productsCollection.find().toArray()
-            res.send(result)
+            res.send(result.reverse())
         })
 
         app.post('/products', verifyJWT, verfyAdmin, async(req, res) => {
             const newProduct = req.body
             const result = await productsCollection.insertOne(newProduct)
+            res.send(result)
+        })
+
+        app.delete('/products', verifyJWT, verfyAdmin, async (req, res) => {
+            const query = { _id: ObjectId(req.query.id) }
+            const result = await productsCollection.deleteOne(query)
             res.send(result)
         })
 
@@ -117,7 +123,7 @@ async function run() {
 
         app.get('/reviews', async(req, res) => {
             const result = await reviewsCollection.find().toArray()
-            res.send(result)
+            res.send(result.reverse())
         })
 
         // users API 
