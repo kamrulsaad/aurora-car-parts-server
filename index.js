@@ -96,12 +96,23 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/reviews', verifyJWT, async(req, res) => {
+        app.get('/reviews', async(req, res) => {
             const result = await reviewsCollection.find().toArray()
             res.send(result)
         })
 
         // users API 
+
+        app.get('/allUsers', async(req, res) => {
+            const result = await usersCollection.find().toArray()
+            res.send(result)
+        })
+
+        app.get('/user', async(req, res) => {
+            const email = req.query.email
+            const result = await usersCollection.findOne({email})
+            res.send(result)
+        })
 
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email
@@ -114,6 +125,18 @@ async function run() {
             const result = await usersCollection.updateOne(filter, updateDoc, options)
             const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN, { expiresIn: '3d' })
             res.send({ result, token })
+        })
+
+        app.put('/update/:email',verifyJWT, async (req, res) => {
+            const email = req.params.email
+            const user = req.body
+            const filter = { email: email }
+            const options = { upsert: true }
+            const updateDoc = {
+                $set: user
+            }
+            const result = await usersCollection.updateOne(filter, updateDoc, options)
+            res.send(result)
         })
 
         // payment API 
