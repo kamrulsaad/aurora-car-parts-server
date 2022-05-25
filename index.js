@@ -38,6 +38,17 @@ async function run() {
     const paymentCollection = client.db('aurora-car-parts').collection('payment')
     const reviewsCollection = client.db('aurora-car-parts').collection('reviews')
 
+    // verify admin middlewear function 
+
+    async function verfyAdmin(req, res, next) {
+        const requester = req.decoded.email
+        const requestedAccount = await usersCollection.findOne({ email: requester })
+        if (requestedAccount.role === 'Admin') {
+            next()
+        }
+        else res.status(403).send({ message: "Forbidden Access" })
+    }
+
     try {
 
         app.get('/products', async (req, res) => {
@@ -139,7 +150,7 @@ async function run() {
             res.send(result)
         })
 
-        app.put('/user/admin/:email', verifyJWT, async (req, res) => {
+        app.put('/user/admin/:email', verifyJWT, verfyAdmin, async (req, res) => {
             const email = req.params.email
             const filter = { email: email }
             const updateDoc = {
