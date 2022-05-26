@@ -72,6 +72,11 @@ async function run() {
 
         // purchase API 
 
+        app.get('/orders', verifyJWT, verfyAdmin, async(req, res) => {
+            const result = await  purchaseCollection.find().toArray()
+            res.send(result.reverse())
+        })
+
         app.get('/purchase',verifyJWT, async (req, res) => {
             const query = { email: req.query.email }
             const result = await purchaseCollection.find(query).toArray()
@@ -104,13 +109,26 @@ async function run() {
             const updateDoc = {
                 $set: {
                     paid: true,
+                    status: 'Pending',
                     transactionId: payment.transactionId
                 }
             }
             const result = paymentCollection.insertOne(payment)
             const updatedBooking = await purchaseCollection.updateOne(filter, updateDoc)
             res.send(updatedBooking)
+        })
 
+        app.put('/purchase/:id', verifyJWT, verfyAdmin, async(req, res) => {
+            const id = req.params.id
+            const filter = {_id : ObjectId(id)}
+            const options = {upsert: true}
+            const updateDoc = {
+                $set: {
+                    status: 'Approved'
+                }
+            }
+            const result = await purchaseCollection.updateOne(filter, updateDoc, options)
+            res.send(result)
         })
 
         // review API
