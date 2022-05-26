@@ -37,6 +37,7 @@ async function run() {
     const usersCollection = client.db('aurora-car-parts').collection('users')
     const paymentCollection = client.db('aurora-car-parts').collection('payment')
     const reviewsCollection = client.db('aurora-car-parts').collection('reviews')
+    const blogsCollection = client.db('aurora-car-parts').collection('blogs')
 
     // verify admin middlewear function 
 
@@ -221,6 +222,13 @@ async function run() {
               clientSecret: paymentIntent.client_secret,
             });
           });
+
+        // blogs API
+
+        app.get('/blogs', async(req, res) => {
+            const result = await blogsCollection.find().toArray()
+            res.send(result)
+        })
 
     }
     finally {
