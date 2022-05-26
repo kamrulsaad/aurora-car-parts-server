@@ -48,3 +48,4 @@ The server should be able to:
 - issue a jwt token for each user login
 - connect to mongodb database and access data stored in there
 - create-payment-intent for stripejs
+- verify jwt token for logged in user to prevent malicious attack
